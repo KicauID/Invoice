@@ -1,27 +1,80 @@
-[
-	{
-		"kind": "column",
-		"name": "HTML PRINT",
-		"author": "Kicau ID <kicauid.official@gmail.com>",
-		"params": [
-			{
-				"name": "html",
-				"displayName": "HTML",
-				"type": "string"
-			},
-			{
-				"name": "fileName",
-				"displayName": "Filename",
-				"type": "string"
-			},
-			{
-				"name": "format",
-				"displayName": "Format (a4, letter, etc)",
-				"type": "string"
-			},
-		],
-		"result": {
-			"type": "string"
-		}
-	}
-]
+{
+  "project_info": {
+    "name": "Thermal Printer Receipt",
+    "description": "A web app to print receipts using a Bluetooth thermal printer.",
+    "version": "1.0.0"
+  },
+  "dynamic_values": {
+    "html": {
+      "type": "string",
+      "description": "HTML content to print",
+      "default": "<div class=\"header\">EVENT NAME</div><div class=\"content\"><div class=\"label\">ID: 12345</div><div class=\"label\">Class: VIP</div><div class=\"label\">Price: $50.00</div></div>"
+    },
+    "fileName": {
+      "type": "string",
+      "description": "Name of the file",
+      "default": "file"
+    },
+    "format": {
+      "type": "string",
+      "description": "Paper format",
+      "default": "58mm, 80mm atau 100mm"
+    },
+    "zoom": {
+      "type": "number",
+      "description": "Zoom level",
+      "default": 1
+    },
+    "orientation": {
+      "type": "string",
+      "description": "Page orientation",
+      "default": "portrait"
+    },
+    "margin": {
+      "type": "number",
+      "description": "Page margin",
+      "default": 0
+    },
+    "breakBefore": {
+      "type": "array",
+      "description": "Elements to break before",
+      "default": []
+    },
+    "breakAfter": {
+      "type": "array",
+      "description": "Elements to break after",
+      "default": []
+    },
+    "breakAvoid": {
+      "type": "array",
+      "description": "Elements to avoid breaking",
+      "default": []
+    },
+    "fidelity": {
+      "type": "string",
+      "description": "Fidelity of the rendered PDF",
+      "default": "standard"
+    },
+    "customDimensions": {
+      "type": "array",
+      "description": "Custom dimensions for the page",
+      "default": null
+    }
+  },
+  "glide_templates": [
+    {
+      "template_name": "index",
+      "path": "index.html",
+      "html": "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Print Receipt</title><style>.receipt {width: auto;padding: 10px;font-family: Helvetica, Arial, sans-serif;}.header {text-align: center;font-weight: bold;padding-bottom: 10px;border-bottom: 1px solid #000;}.content {padding: 10px 0;}.content .label {display: block;margin-bottom: 5px;}.button-container {display: flex;justify-content: center;margin-top: 20px;}button {padding: 10px 20px;font-size: 16px;font-weight: bold;text-transform: uppercase;cursor: pointer;border: none;border-radius: 5px;}button#cetak {background-color: #0353A7;color: #fff;margin-right: 10px;}</style></head><body><div class=\"receipt\">{{html}}</div><div class=\"button-container\"><button id=\"cetak\">Cetak</button></div><script src=\"https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js\"></script><script>async function connectToPrinter() {try {const device = await navigator.bluetooth.requestDevice({filters: [{ services: ['printer_service'] }]});const server = await device.gatt.connect();const service = await server.getPrimaryService('printer_service');const characteristic = await service.getCharacteristic('printer_characteristic');return characteristic;} catch (error) {console.error('Failed to connect to the printer', error);}}document.getElementById('cetak').addEventListener('click', async function() {const characteristic = await connectToPrinter();if (characteristic) {const element = document.querySelector('.receipt');html2canvas(element, {onrendered: function(canvas) {const dataUrl = canvas.toDataURL('image/png');const img = new Image();img.src = dataUrl;img.onload = function() {const canvasPrint = document.createElement('canvas');canvasPrint.width = img.width;canvasPrint.height = img.height;const context = canvasPrint.getContext('2d');context.drawImage(img, 0, 0);canvasPrint.toBlob(function(blob) {const reader = new FileReader();reader.onload = function() {const data = new Uint8Array(reader.result);characteristic.writeValue(data);};reader.readAsArrayBuffer(blob);};};}});}});</script></body></html>"
+    }
+  ],
+  "glide_routes": [
+    {
+      "route": "/",
+      "template": "index"
+    }
+  ],
+  "glide_dependencies": {
+    "html2canvas": "^0.4.1"
+  }
+}
