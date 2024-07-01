@@ -2,7 +2,7 @@
     {
         "kind": "column",
         "name": "HTML to Printer",
-        "description": "Allows you to print HTML content directly to a Bluetooth thermal printer",
+        "description": "Allows you to print HTML content directly to a Bluetooth printer",
         "author": "KICAU NUSANTARA",
         "params": [
             {
