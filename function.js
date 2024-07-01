@@ -1,4 +1,11 @@
 window.function = function (html, fileName, format, zoom, orientation, margin, breakBefore, breakAfter, breakAvoid, fidelity, customDimensions) {
+    // FIDELITY MAPPING
+    const fidelityMap = {
+        low: 1,
+        standard: 1.5,
+        high: 2,
+    };
+    
     // DYNAMIC VALUES
     html = html.value ?? "No HTML set.";
     fileName = fileName.value ?? "file";
@@ -14,8 +21,7 @@ window.function = function (html, fileName, format, zoom, orientation, margin, b
 
     // DOCUMENT DIMENSIONS
     const formatDimensions = {
-        // Add your format dimensions here as needed
-        thermal_80mm: [224, 1050],  // Assuming this is your thermal 80mm format
+        thermal_80mm: [224, 1050],
     };
 
     // GET FINAL DIMENSIONS FROM SELECTED FORMAT
