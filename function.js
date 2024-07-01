@@ -46,12 +46,7 @@
 </head>
 <body>
     <div class="receipt">
-        <div class="header">EVENT NAME</div>
-        <div class="content">
-            <div class="label">ID: 12345</div>
-            <div class="label">Class: VIP</div>
-            <div class="label">Price: $50.00</div>
-        </div>
+        <!-- Content will be dynamically inserted here -->
     </div>
     <div class="button-container">
         <button id="cetak">Cetak</button>
@@ -59,7 +54,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
     <script>
         // DYNAMIC VALUES
-        const html = "No HTML set.";
+        const htmlContent = `
+            <div class="header">EVENT NAME</div>
+            <div class="content">
+                <div class="label">ID: 12345</div>
+                <div class="label">Class: VIP</div>
+                <div class="label">Price: $50.00</div>
+            </div>
+        `;
         const fileName = "file";
         const format = "58mm, 80mm atau 100mm";
         const zoom = 1;
@@ -70,6 +72,8 @@
         const breakAvoid = [];
         const fidelity = "standard";
         const customDimensions = null;
+
+        document.querySelector('.receipt').innerHTML = htmlContent;
 
         // Connect to Bluetooth Printer and Print
         async function connectToPrinter() {
