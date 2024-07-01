@@ -3,121 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Receipt</title>
+    <title>HTML to Print Thermal</title>
     <style>
-        .receipt {
-            width: auto;
-            padding: 10px;
-            font-family: Helvetica;
-        }
-        .header {
-            text-align: center;
-            font-weight: bold;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #000;
-        }
-        .content {
-            padding: 10px 0;
-        }
-        .content .label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
-        button#cetak {
-            background-color: #0353A7;
+        .print-button {
+            background-color: #0353A7; /* Warna biru untuk tombol PRINT */
             color: #fff;
-            margin-right: 10px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="receipt">
-        <!-- Content will be dynamically inserted here -->
+    <!-- Contoh data HTML yang ingin dicetak -->
+    <div id="receipt-content">
+        <h1>Tanda Terima</h1>
+        <p>Ini adalah contoh tanda terima yang ingin dicetak.</p>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Harga</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Item 1</td>
+                    <td>$10.00</td>
+                </tr>
+                <tr>
+                    <td>Item 2</td>
+                    <td>$20.00</td>
+                </tr>
+                <tr>
+                    <td>Item 3</td>
+                    <td>$15.00</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    <div class="button-container">
-        <button id="cetak">Cetak</button>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+
+    <!-- Tombol cetak -->
+    <button class="print-button" onclick="printToBluetooth()">CETAK</button>
+
+    <script src="driver.js"></script>
+    <script src="function.js"></script>
     <script>
-        // DYNAMIC VALUES
-        const htmlContent = `
-            <div class="header">EVENT NAME</div>
-            <div class="content">
-                <div class="label">ID: 12345</div>
-                <div class="label">Class: VIP</div>
-                <div class="label">Price: $50.00</div>
-            </div>
-        `;
-        const fileName = "file";
-        const format = "58mm, 80mm atau 100mm";
-        const zoom = 1;
-        const orientation = "portrait";
-        const margin = 0;
-        const breakBefore = [];
-        const breakAfter = [];
-        const breakAvoid = [];
-        const fidelity = "standard";
-        const customDimensions = null;
+        function printToBluetooth() {
+            var html = document.getElementById('receipt-content').innerHTML;
+            var fileName = "receipt";
+            var format = "thermal_58mm"; // Format kertas thermal 58mm, bisa disesuaikan
+            var zoom = "1";
+            var orientation = "portrait";
+            var margin = "0";
+            var breakBefore = "";
+            var breakAfter = "";
+            var breakAvoid = "";
+            var fidelity = "standard";
+            var customDimensions = null; // Dapat disesuaikan jika menggunakan dimensi khusus
 
-        document.querySelector('.receipt').innerHTML = htmlContent;
-
-        // Connect to Bluetooth Printer and Print
-        async function connectToPrinter() {
-            try {
-                const device = await navigator.bluetooth.requestDevice({
-                    filters: [{ services: ['printer_service'] }]
-                });
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('printer_service');
-                const characteristic = await service.getCharacteristic('printer_characteristic');
-                return characteristic;
-            } catch (error) {
-                console.error('Failed to connect to the printer', error);
-            }
+            var url = window.function(html, fileName, format, zoom, orientation, margin, breakBefore, breakAfter, breakAvoid, fidelity, customDimensions);
+            window.open(url, '_blank');
         }
-
-        document.getElementById('cetak').addEventListener('click', async function() {
-            const characteristic = await connectToPrinter();
-            if (characteristic) {
-                const element = document.querySelector('.receipt');
-                html2canvas(element, {
-                    onrendered: function(canvas) {
-                        const dataUrl = canvas.toDataURL('image/png');
-                        const img = new Image();
-                        img.src = dataUrl;
-                        img.onload = function() {
-                            const canvasPrint = document.createElement('canvas');
-                            canvasPrint.width = img.width;
-                            canvasPrint.height = img.height;
-                            const context = canvasPrint.getContext('2d');
-                            context.drawImage(img, 0, 0);
-                            canvasPrint.toBlob(function(blob) {
-                                const reader = new FileReader();
-                                reader.onload = function() {
-                                    const data = new Uint8Array(reader.result);
-                                    characteristic.writeValue(data);
-                                };
-                                reader.readAsArrayBuffer(blob);
-                            });
-                        };
-                    }
-                });
-            }
-        });
     </script>
 </body>
 </html>
