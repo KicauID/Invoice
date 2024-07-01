@@ -1,0 +1,27 @@
+[
+	{
+		"kind": "column",
+		"name": "HTML PRINT",
+		"author": "Kicau ID <kicauid.official@gmail.com>",
+		"params": [
+			{
+				"name": "html",
+				"displayName": "HTML",
+				"type": "string"
+			},
+			{
+				"name": "fileName",
+				"displayName": "Filename",
+				"type": "string"
+			},
+			{
+				"name": "format",
+				"displayName": "Format (a4, letter, etc)",
+				"type": "string"
+			},
+		],
+		"result": {
+			"type": "string"
+		}
+	}
+]
