@@ -17,8 +17,8 @@
     },
     "format": {
       "type": "string",
-      "description": "Paper format",
-      "default": "58mm, 80mm atau 100mm"
+      "description": "Paper format (e.g., thermal_58mm, thermal_80mm)",
+      "default": "thermal_58mm"
     },
     "zoom": {
       "type": "number",
