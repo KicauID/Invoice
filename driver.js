@@ -1,36 +1,23 @@
-window.addEventListener("message", async function(event) {
-  const { origin, data: { key, params } } = event;
+// driver.js
 
-  let hasil;
-  let kesalahan;
-  try {
-    // Inisialisasi pustaka dengan konfigurasi Anda
-    const printer = new PrinterLibrary(/* opsi Anda */);
+// Function to print content to Bluetooth printer
+async function printToBluetoothPrinter(content) {
+    try {
+        const device = await navigator.bluetooth.requestDevice({
+            filters: [{ services: ['printer_service'] }]
+        });
 
-    // Gunakan metode pustaka untuk memformat dan mengirim data
-    const dataCetak = formatDataUntukPrinterThermal(params); // Adaptasi data
-    await printer.print(dataCetak);
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService('printer_service');
+        const characteristic = await service.getCharacteristic('print_characteristic');
 
-    hasil = "Proses cetak berhasil";
-  } catch (e) {
-    hasil = undefined;
-    kesalahan = e.toString();
-  }
+        let data = new TextEncoder().encode(content);
+        await characteristic.writeValue(data);
 
-  const respon = { key };
-  if (hasil !== undefined) {
-    respon.result = { value: hasil };
-  }
-  if (kesalahan !== undefined) {
-    respon.error = kesalahan;
-  }
-
-  event.source.postMessage(respon, "*");
-});
-
-function formatDataUntukPrinterThermal(params) {
-  // Implementasi logika untuk mengubah data menjadi format yang sesuai
-  //  printer thermal (perintah ESC/POS atau urutan kontrol khusus)
-  //  sesuai model printer Anda.
-  return dataDiformat;
+        console.log('Printed successfully');
+        alert('Printed successfully');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to print');
+    }
 }
