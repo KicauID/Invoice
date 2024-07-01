@@ -8,7 +8,7 @@
         .receipt {
             width: auto;
             padding: 10px;
-            font-family: Helvetica, Arial, sans-serif;
+            font-family: Helvetica;
         }
         .header {
             text-align: center;
