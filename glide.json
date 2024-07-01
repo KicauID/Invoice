@@ -14,9 +14,28 @@
                     "width": "full",
                     "items": [
                       {
-                        "component": "html_view",
+                        "component": "html",
                         "source": {
                           "html": "function = function (html, fileName, format, zoom, orientation, margin, breakBefore, breakAfter, breakAvoid, fidelity, customDimensions) { ..."
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "columns": [
+                  {
+                    "width": "full",
+                    "items": [
+                      {
+                        "component": "button",
+                        "source": {
+                          "title": "Print",
+                          "action": {
+                            "type": "custom_action",
+                            "name": "print_action"
+                          }
                         }
                       }
                     ]
@@ -26,6 +45,14 @@
             ]
           }
         ]
+      }
+    }
+  ],
+  "custom_actions": [
+    {
+      "name": "print_action",
+      "source": {
+        "javascript": "document.getElementById('print').click();"
       }
     }
   ]
