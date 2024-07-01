@@ -1,73 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTML to Print Thermal</title>
-    <style>
-        .print-button {
-            background-color: #0353A7; /* Warna biru untuk tombol PRINT */
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-top: 20px;
-        }
-    </style>
-</head>
-<body>
-    <!-- Contoh data HTML yang ingin dicetak -->
-    <div id="receipt-content">
-        <h1>Tanda Terima</h1>
-        <p>Ini adalah contoh tanda terima yang ingin dicetak.</p>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Harga</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Item 1</td>
-                    <td>$10.00</td>
-                </tr>
-                <tr>
-                    <td>Item 2</td>
-                    <td>$20.00</td>
-                </tr>
-                <tr>
-                    <td>Item 3</td>
-                    <td>$15.00</td>
-                </tr>
-            </tbody>
-        </table>
+window.function = function (html, fileName, format, zoom, orientation, margin, breakBefore, breakAfter, breakAvoid, fidelity, customDimensions) {
+    // DYNAMIC VALUES
+    html = html.value ?? "No HTML set.";
+    fileName = fileName.value ?? "file";
+    format = format.value ?? "a4";
+    zoom = zoom.value ?? "1";
+    orientation = orientation.value ?? "portrait";
+    margin = margin.value ?? "0";
+    breakBefore = breakBefore.value ? breakBefore.value.split(",") : [];
+    breakAfter = breakAfter.value ? breakAfter.value.split(",") : [];
+    breakAvoid = breakAvoid.value ? breakAvoid.value.split(",") : [];
+    quality = fidelityMap[fidelity.value] ?? 1.5;
+    customDimensions = customDimensions.value ? customDimensions.value.split(",").map(Number) : null;
+
+    // DOCUMENT DIMENSIONS
+    const formatDimensions = {
+        // Add your format dimensions here as needed
+        thermal_80mm: [224, 1050],  // Assuming this is your thermal 80mm format
+    };
+
+    // GET FINAL DIMENSIONS FROM SELECTED FORMAT
+    const dimensions = customDimensions || formatDimensions[format];
+    const finalDimensions = dimensions.map((dimension) => Math.round(dimension / zoom));
+
+    // LOG SETTINGS TO CONSOLE (optional)
+    console.log(
+        `Filename: ${fileName}\n` +
+        `Format: ${format}\n` +
+        `Dimensions: ${dimensions}\n` +
+        `Zoom: ${zoom}\n` +
+        `Final Dimensions: ${finalDimensions}\n` +
+        `Orientation: ${orientation}\n` +
+        `Margin: ${margin}\n` +
+        `Break before: ${breakBefore}\n` +
+        `Break after: ${breakAfter}\n` +
+        `Break avoid: ${breakAvoid}\n` +
+        `Quality: ${quality}`
+    );
+
+    const customCSS = `
+    /* Add your custom CSS styles here */
+    `;
+
+    const originalHTML = `
+    <style>${customCSS}</style>
+    <div class="main">
+      <button class="button" id="print">Print</button>
+      <div id="content" class="content">${html}</div>
     </div>
-
-    <!-- Tombol cetak -->
-    <button class="print-button" onclick="printToBluetooth()">CETAK</button>
-
-    <script src="driver.js"></script>
-    <script src="function.js"></script>
     <script>
-        function printToBluetooth() {
-            var html = document.getElementById('receipt-content').innerHTML;
-            var fileName = "receipt";
-            var format = "thermal_58mm"; // Format kertas thermal 58mm, bisa disesuaikan
-            var zoom = "1";
-            var orientation = "portrait";
-            var margin = "0";
-            var breakBefore = "";
-            var breakAfter = "";
-            var breakAvoid = "";
-            var fidelity = "standard";
-            var customDimensions = null; // Dapat disesuaikan jika menggunakan dimensi khusus
+      document.getElementById('print').addEventListener('click', function() {
+        var element = document.getElementById('content');
+        var button = this;
+        button.innerText = 'PRINTING...';
+        button.className = 'printing';
 
-            var url = window.function(html, fileName, format, zoom, orientation, margin, breakBefore, breakAfter, breakAvoid, fidelity, customDimensions);
-            window.open(url, '_blank');
-        }
+        // You can add specific printing logic here for Bluetooth thermal printer
+        // Ensure your Bluetooth printer is properly connected and configured
+
+        // Example:
+        window.print();
+
+        button.innerText = 'PRINT DONE';
+        button.className = 'done';
+        setTimeout(function() { 
+          button.innerText = 'Print';
+          button.className = ''; 
+        }, 2000);
+      });
     </script>
-</body>
-</html>
+    `;
+
+    var encodedHtml = encodeURIComponent(originalHTML);
+    return "data:text/html;charset=utf-8," + encodedHtml;
+};
