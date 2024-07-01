@@ -18,6 +18,6 @@ async function printToBluetoothPrinter(content) {
         alert('Printed successfully');
     } catch (error) {
         console.error('Error:', error);
-        alert('Failed to print');
+        alert('Failed to print: ' + error);
     }
 }
